@@ -4,16 +4,24 @@ const fs = require('fs');
 const os = require('os');
 const _ = require('lodash');
 const notes = require('./notes.js');
+const yargs = require('yargs');
 
-var string = [1,2,3,1,2,3,4,5,6,5,4,3,12];
+var command = process.argv[2];
+const argv = yargs.argv;
 
-console.log(_.uniq(string));
+console.log("Command: ", command);
+// console.log("Process: ", process.argv);
+console.log("Yargs: ", argv);
 
-
-// console.log("Result: ", notes.add(2, -3));
-
-// fs.appendFile('greetings.txt', `Hello ${user.username}!` , function (error) {
-//     if(error){
-//         console.log("Unable to write to file!");
-//     }
-// });
+if(command === 'add'){
+    var note = notes.addNote(argv.title, argv.body);
+    if (note === undefined) console.log('Nie istnieje taki tytuł ani ciało');
+    else console.log('Dodano odpowedni tytuł:', argv.title, 'oraz ciało: ', argv.body);
+}else if(command === 'remove'){
+    if(notes.removeNote(argv.title)) console.log("Usunięto tytuł: ", argv.title);
+    else console.log("Nie usunięto nic z tablicy");
+}else if(command === 'get'){
+    var note = notes.getNote(argv.title);
+    var message = note ? "Pobrano tytuł: " + note.title + " o ciele: " + note.body  : "Nie istnieje taki tytuł";
+    console.log(message);
+}
