@@ -1,0 +1,22 @@
+{
+  "name": "firstapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kosoniu/node.js.git"
+  },
+  "author": "Karol Koson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kosoniu/node.js/issues"
+  },
+  "homepage": "https://github.com/kosoniu/node.js#readme",
+  "dependencies": {
+    "lodash": "^4.17.11"
+  }
+}
