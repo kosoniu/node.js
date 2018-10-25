@@ -1,5 +1,3 @@
-console.log('Starting app');
-
 const fs = require('fs');
 const os = require('os');
 const _ = require('lodash');
@@ -7,11 +5,21 @@ const notes = require('./notes.js');
 const yargs = require('yargs');
 
 var command = process.argv[2];
-const argv = yargs.argv;
-
-console.log("Command: ", command);
-// console.log("Process: ", process.argv);
-console.log("Yargs: ", argv);
+const argv = yargs
+.command('add', 'Add a new note', {
+    title: {
+        describe: 'Title of note',
+        demand: true,
+        alias: 't'
+    },
+    body: {
+        describe: 'Body of note',
+        demand: true,
+        alias: 'b'
+    }
+})
+.help()
+.argv;
 
 if(command === 'add'){
     var note = notes.addNote(argv.title, argv.body);
@@ -24,4 +32,11 @@ if(command === 'add'){
     var note = notes.getNote(argv.title);
     var message = note ? "Pobrano tytuł: " + note.title + " o ciele: " + note.body  : "Nie istnieje taki tytuł";
     console.log(message);
+}else if(command === 'list'){
+    var notesList = notes.getAll();
+    var message = notes ? "Pobrano listę wszystkich tytułów" : "Nie istnieje taki tytuł";
+
+    notesList.forEach((note) => {
+        console.log(note.title + ' ' + note.body);
+    })
 }

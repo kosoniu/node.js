@@ -1,5 +1,3 @@
-console.log('Starting notes.js');
-
 const fs = require('fs');
 
 var fetchNotes = () => {
@@ -39,6 +37,10 @@ var removeNote = (title) => {
     return (notes.length !== filteredNotes.length);
 };
 
+var getAll = () => {
+    return fetchNotes();
+}
+
 var getNote = (title) => {
     var notes = fetchNotes();
     var filteredNote = notes.filter((note) => note.title === title);
@@ -49,5 +51,6 @@ var getNote = (title) => {
 module.exports = {
     addNote,
     removeNote,
-    getNote
+    getNote,
+    getAll
 };
