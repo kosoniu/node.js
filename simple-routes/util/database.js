@@ -13,15 +13,18 @@ const MongoClient = mongodb.MongoClient;
 
 let _db;
 
-const mongoConnect = ( callback ) =>{
-    MongoClient.connect('mongodb+srv://kosoniu:rsFp6EW6WYw316X6@testcluster-dfhlg.gcp.mongodb.net/test?retryWrites=true')
+const mongoConnect = ( callback ) => {
+    MongoClient.connect('mongodb+srv://kosoniu:admin@testcluster-dfhlg.gcp.mongodb.net/test?retryWrites=true')
     .then( client => {
         console.log('Connected')
         _db = client.db();
         callback();
+        client.reject();
     })
-    .catch( error => console.log( error ));
-    throw error;
+    .catch( error => {
+        console.log( error )
+        throw error;
+    })
 };
 
 const getDB = () => {
