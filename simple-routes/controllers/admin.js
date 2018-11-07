@@ -16,7 +16,7 @@ exports.postAddProduct = (req, res, next) => {
   const price = req.body.price;
   const description = req.body.description;
 
-  const product = new Product(title, price, description, imageUrl);
+  const product = new Product(title, price, description, imageUrl, null, req.user._id);
   product.save()
   .then( result => {
     console.log('Created table')
@@ -59,7 +59,14 @@ exports.postEditProduct = (req, res, next) => {
   const updatedImgUrl = req.body.imageUrl;
   const updatedDescription = req.body.description;
   
-  const product = new Product(updatedTitle, updatedPrice, updatedDescription, updatedImgUrl, mongodb.ObjectId(productId));
+  const product = new Product(
+    updatedTitle, 
+    updatedPrice, 
+    updatedDescription, 
+    updatedImgUrl, 
+    productId
+  );
+
   product.save()
   .then( result => {
     console.log("Updated product")
@@ -85,11 +92,9 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const productId = req.body.productId;
-  Product.findById(productId)
-  .then( product => {
-    return product.destroy();
-  })
-  .then( result => {
+
+  Product.deleteById(productId)
+  .then( () => {
     console.log("destroyed product")
     res.redirect('/admin/products');
   })

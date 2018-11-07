@@ -19,7 +19,6 @@ const mongoConnect = ( callback ) => {
         console.log('Connected')
         _db = client.db();
         callback();
-        client.reject();
     })
     .catch( error => {
         console.log( error )

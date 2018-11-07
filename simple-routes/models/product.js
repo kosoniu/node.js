@@ -31,19 +31,20 @@ const getDB = require('../util/database').getDB;
 const mongodb = require('mongodb');
 
 class Product {
-  constructor(title, price, description, imageUrl, id) {
+  constructor(title, price, description, imageUrl, id, userID) {
     this.description = description;
     this.title = title;
     this.price = price;
     this.imageUrl = imageUrl;
-    this._id = id;
+    this._id = id ? new mongodb.ObjectId(id) : null;
+    this.userID = userID;
   }
 
   save() {
     const db = getDB();
     let dbOp;
     if(this._id) { 
-      dbOp = db.collection('products').updateOne({ _id: new mongodb.ObjectId(this._id) }, { $set: this });
+      dbOp = db.collection('products').updateOne({ _id: this._id }, { $set: this });
     }else{
       dbOp = db.collection('products').insertOne(this);
     }
@@ -71,6 +72,18 @@ class Product {
       return product;
     })
     .catch(error => console.log(error));
+  }
+
+
+  static deleteById(productID) {
+    const db = getDB();
+
+    return db.collection('products')
+    .deleteOne({_id: new mongodb.ObjectID(productID) })
+    .then( result => {
+      console.log('Deleted Item!');
+    })
+    .catch( error => console.log( error ));
   }
 
 
