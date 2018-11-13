@@ -5,9 +5,11 @@ const bodyParser = require('body-parser');
 
 const errorController = require('./controllers/error');
 // NoSQL
-const mongoConnect = require('./util/database').mongoConnect;
-const User = require('./models/user');
+// const mongoConnect = require('./util/database').mongoConnect;
+// const User = require('./models/user');
 
+// Mongoose
+const mongoose = require('mongoose');
 
 
 // SQL
@@ -18,6 +20,7 @@ const User = require('./models/user');
 // const CartItem = require('./models/cart-item');
 // const Order = require('./models/order');
 // const OrderItem = require('./models/order-item');
+
 
 
 const app = express();
@@ -32,14 +35,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // USER FOR SQL
-app.use((req, res, next) => {
-    User.findById('5be2c66066735241c8b5149a')
-    .then( user =>{
-        req.user = new User(user.name, user.email, user.cart, user._id);
-        next();
-    })
-    .catch( error => console.log(error));
-});
+// app.use((req, res, next) => {
+//     User.findById('5be2c66066735241c8b5149a')
+//     .then( user =>{
+//         req.user = new User(user.name, user.email, user.cart, user._id);
+//         next();
+//     })
+//     .catch( error => console.log(error));
+// });
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
@@ -83,7 +86,13 @@ app.use(errorController.get404);
 //     });
 
 // NoSQL
-mongoConnect( () => {
-    app.listen(3000);
-});
+// mongoConnect( () => {
+//     app.listen(3000);
+// });
 
+//mongoose
+mongoose.connect('mongodb+srv://kosoniu:admin@testcluster-dfhlg.gcp.mongodb.net/shop?retryWrites=true', { useNewUrlParser: true })
+.then( result => {
+    app.listen(3000);
+})
+.catch( error => console.log(error));

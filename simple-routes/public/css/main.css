@@ -19,6 +19,27 @@ form {
   display: inline;
 }
 
+.centered {
+  text-align: center;
+}
+
+.centered div {
+  max-width: 350px;
+  margin: 0 auto;
+}
+
+.centered div img{
+  width: 100%;
+}
+
+.image {
+  height: 20rem;
+}
+
+.image img {
+  height: 100%;
+}
+
 .main-header {
   width: 100%;
   height: 3.5rem;
@@ -193,6 +214,17 @@ form {
   color: white;
 }
 
+.btn.danger {
+  color: red;
+  border-color: red;
+}
+
+.btn.danger:hover,
+.btn.danger:active {
+  background: red;
+  color: white;
+}
+
 @media (min-width: 768px) {
   .main-header__nav {
     display: flex;
@@ -201,8 +233,4 @@ form {
   #side-menu-toggle {
     display: none;
   }
-}
-
-.centered{
-  text-align: center;
 }

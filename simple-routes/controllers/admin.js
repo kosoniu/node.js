@@ -1,6 +1,4 @@
 const Product = require('../models/product');
-const mongodb = require('mongodb');
-
 
 exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
@@ -16,10 +14,15 @@ exports.postAddProduct = (req, res, next) => {
   const price = req.body.price;
   const description = req.body.description;
 
-  const product = new Product(title, price, description, imageUrl, null, req.user._id);
+  const product = new Product({
+    title,
+    price,
+    description,
+    imageUrl
+  });
   product.save()
   .then( result => {
-    console.log('Created table')
+    console.log('Created Product')
     res.redirect('/admin/products');
   })
   .catch( error => {
@@ -58,16 +61,17 @@ exports.postEditProduct = (req, res, next) => {
   const updatedPrice = req.body.price;
   const updatedImgUrl = req.body.imageUrl;
   const updatedDescription = req.body.description;
-  
-  const product = new Product(
-    updatedTitle, 
-    updatedPrice, 
-    updatedDescription, 
-    updatedImgUrl, 
-    productId
-  );
 
-  product.save()
+  Product.findById(productId)
+  .then(product => {
+    product.title = updatedTitle;
+    product.price = updatedPrice;
+    product.description = updatedDescription;
+    product.imageUrl = updatedImgUrl;
+
+    return product
+    .save()
+  })
   .then( result => {
     console.log("Updated product")
     res.redirect('/admin/products');
@@ -76,7 +80,7 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll()
+  Product.find()
   .then(products => {
     res.render('admin/products', {
       prods: products,
@@ -93,7 +97,7 @@ exports.getProducts = (req, res, next) => {
 exports.postDeleteProduct = (req, res, next) => {
   const productId = req.body.productId;
 
-  Product.deleteById(productId)
+  Product.findByIdAndRemove(productId)
   .then( () => {
     console.log("destroyed product")
     res.redirect('/admin/products');
