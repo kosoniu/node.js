@@ -43,7 +43,7 @@
 //   save() {
 //     const db = getDB();
 //     let dbOp;
-//     if(this._id) { 
+//     if(this._id) {
 //       dbOp = db.collection('products').updateOne({ _id: this._id }, { $set: this });
 //     }else{
 //       dbOp = db.collection('products').insertOne(this);
@@ -111,6 +111,11 @@ const productSchema = new Schema({
   },
   imageUrl: {
     type: String,
+    required: true
+  },
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
     required: true
   }
 });

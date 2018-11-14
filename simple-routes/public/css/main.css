@@ -23,15 +23,6 @@ form {
   text-align: center;
 }
 
-.centered div {
-  max-width: 350px;
-  margin: 0 auto;
-}
-
-.centered div img{
-  width: 100%;
-}
-
 .image {
   height: 20rem;
 }

@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const errorController = require('./controllers/error');
 // NoSQL
 // const mongoConnect = require('./util/database').mongoConnect;
-// const User = require('./models/user');
+const User = require('./models/user');
 
 // Mongoose
 const mongoose = require('mongoose');
@@ -35,14 +35,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // USER FOR SQL
-// app.use((req, res, next) => {
-//     User.findById('5be2c66066735241c8b5149a')
-//     .then( user =>{
-//         req.user = new User(user.name, user.email, user.cart, user._id);
-//         next();
-//     })
-//     .catch( error => console.log(error));
-// });
+app.use((req, res, next) => {
+    User.findById('5bec12c0ac26e44038f80e17')
+    .then( user =>{
+        req.user = user;
+        next();
+    })
+    .catch( error => console.log(error));
+});
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
@@ -93,6 +93,19 @@ app.use(errorController.get404);
 //mongoose
 mongoose.connect('mongodb+srv://kosoniu:admin@testcluster-dfhlg.gcp.mongodb.net/shop?retryWrites=true', { useNewUrlParser: true })
 .then( result => {
+  User.findOne()
+  .then( user => {
+    if(!user){
+      const user = new User({
+        name: "Karol",
+        email: 'karol@test.pl',
+        cart : {
+          items: []
+        }
+      });
+      user.save();
+    }
+  });
     app.listen(3000);
 })
 .catch( error => console.log(error));
