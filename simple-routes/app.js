@@ -2,110 +2,71 @@ const path = require('path');
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session);
+
+const MONGODB_URI = "mongodb+srv://kosoniu:admin@testcluster-dfhlg.gcp.mongodb.net/shop?retryWrites=true";
 
 const errorController = require('./controllers/error');
-// NoSQL
-// const mongoConnect = require('./util/database').mongoConnect;
 const User = require('./models/user');
 
-// Mongoose
-const mongoose = require('mongoose');
-
-
-// SQL
-// const sequelize = require('./util/database');
-// const Product = require('./models/product');
-// const User = require('./models/user');
-// const Cart = require('./models/cart');
-// const CartItem = require('./models/cart-item');
-// const Order = require('./models/order');
-// const OrderItem = require('./models/order-item');
-
-
-
 const app = express();
+const store = new MongoDBStore({
+  uri: MONGODB_URI,
+  collection: 'sessions'
+});
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
+const authRoutes = require('./routes/auth');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(
+  session({
+    secret: 'my secret', 
+    resave: false, 
+    saveUninitialized: false, 
+    store: store
+  })
+);
 
-// USER FOR SQL
 app.use((req, res, next) => {
-    User.findById('5bec12c0ac26e44038f80e17')
-    .then( user =>{
-        req.user = user;
-        next();
+  User.findById('5bed5c7adf3a1653305f9447')
+    .then(user => {
+      req.user = user;
+      next();
     })
-    .catch( error => console.log(error));
+    .catch(err => console.log(err));
 });
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
+app.use(authRoutes);
 
 app.use(errorController.get404);
 
-// SQL
-
-// Product.belongsTo(User, {constraints: true, onDelete: "CASCADE" });
-// User.hasMany(Product);
-// User.hasOne(Cart);
-// Cart.belongsTo(User);
-// Cart.belongsToMany(Product, { through: CartItem });
-// Product.belongsToMany(Cart, { through: CartItem });
-// Order.belongsTo(User);
-// User.hasMany(Order);
-// Order.belongsToMany(Product, { through: OrderItem });
-
-
-// sequelize
-//     // .sync({ force: true })
-//     .sync()
-//     .then( result => {
-//         return User.findById(1);
-//     })
-//     .then( user => {
-//         if( !user){
-//              return User.create({name: "Karol", email: "test@test.pl"})
-//         }
-
-//         return user;
-//     })
-//     .then( user => {
-//         return user.createCart();
-//     })
-//     .then( cart => {
-//         app.listen(3000);
-//     })
-//     .catch( error => {
-//         console.log(error);
-//     });
-
-// NoSQL
-// mongoConnect( () => {
-//     app.listen(3000);
-// });
-
-//mongoose
-mongoose.connect('mongodb+srv://kosoniu:admin@testcluster-dfhlg.gcp.mongodb.net/shop?retryWrites=true', { useNewUrlParser: true })
-.then( result => {
-  User.findOne()
-  .then( user => {
-    if(!user){
-      const user = new User({
-        name: "Karol",
-        email: 'karol@test.pl',
-        cart : {
-          items: []
-        }
-      });
-      user.save();
-    }
-  });
+mongoose
+  .connect(MONGODB_URI, { useNewUrlParser: true })
+  .then(result => {
+    User.findOne().then(user => {
+      if (!user) {
+        const user = new User({
+          name: 'Karol',
+          email: 'test@test.com',
+          cart: {
+            items: []
+          }
+        });
+        user.save();
+      }
+    });
     app.listen(3000);
-})
-.catch( error => console.log(error));
+  })
+  .catch(err => {
+    console.log(err);
+  });
