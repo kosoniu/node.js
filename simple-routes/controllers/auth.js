@@ -1,10 +1,8 @@
+const User = require('../models/user');
+const bcrypt = require('bcryptjs');
+
+
 exports.getLogin = (req, res, next) => {
-  const isLoggedIn = req
-  .get('Cookie')
-  .split(';')[2]
-  .trim()
-  .split('=')[1];
-  
   res.render('auth/login', {
     path: '/login',
     pageTitle: 'Login',
@@ -12,9 +10,78 @@ exports.getLogin = (req, res, next) => {
   });
 };
 
+exports.getSignup = (req, res, next) => {
+  res.render('auth/signup', {
+    path: '/signup',
+    pageTitle: 'Signup',
+    isAuthenticated: false
+  });
+};
 
 exports.postLogin = (req, res, next) => {
-  // res.setHeader('Set-Cookie', 'loggedIn=true');
-  req.session.isLoggedIn = true;
-  res.redirect('/');
+  const email = req.body.email;
+  const password = req.body.password;
+
+  User.findOne({email: email})
+    .then(user => {
+      if(!user){
+        return res.redirect('/login');
+      }else{
+        return bcrypt.compare(password, user.password)
+        .then( result => {
+          if(result){
+            req.session.isLoggedIn = true;
+            req.session.user = user;
+            return req.session.save(err => {
+              console.log(err);
+              res.redirect('/');
+            });
+          }else{
+            res.redirect('/login');
+          }
+        })
+        .catch( error => console.log(error));
+      }
+    })
+    .catch(err => console.log(err));
+};
+
+exports.postSignup = (req, res, next) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const confirmPassword = req.body.confirmPassword;
+
+  User.findOne({ email: email })
+  .then( user => {
+    if(user){
+      return res.redirect('/signup');
+    }else{
+      return bcrypt.hash(password, 12)
+      .then(hashedPassword => {
+        const user = new User({
+          email: email,
+          password: hashedPassword,
+          cart: {
+            items: []
+          }
+        });
+
+        return user.save()
+      })
+      .then(result => {
+        res.redirect('/login');
+      })
+      .catch(error => console.log(error));
+    }
+  })
+  .catch( error => {
+    console.log(error);
+  })
+};
+
+exports.postLogout = (req, res, next) => {
+  req.session.destroy(err => {
+    console.log(err);
+    res.redirect('/');
+  });
 };
