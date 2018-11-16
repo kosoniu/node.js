@@ -3,7 +3,6 @@ const path = require('path');
 const express = require('express');
 
 const shopController = require('../controllers/shop');
-
 const isAuth = require('../middleware/is-auth');
 
 const router = express.Router();
@@ -25,4 +24,3 @@ router.post('/create-order', isAuth, shopController.postOrder);
 router.get('/orders', isAuth, shopController.getOrders);
 
 module.exports = router;
-
