@@ -1,5 +1,9 @@
 const Product = require('../models/product');
 const Order = require('../models/order');
+const fs = require('fs');
+const path = require('path');
+
+const PDFDocument = require('pdfkit');
 
 exports.getProducts = (req, res, next) => {
   Product.find()
@@ -12,7 +16,9 @@ exports.getProducts = (req, res, next) => {
       });
     })
     .catch(err => {
-      console.log(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -26,7 +32,11 @@ exports.getProduct = (req, res, next) => {
         path: '/products'
       });
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.getIndex = (req, res, next) => {
@@ -39,7 +49,9 @@ exports.getIndex = (req, res, next) => {
       });
     })
     .catch(err => {
-      console.log(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -55,7 +67,11 @@ exports.getCart = (req, res, next) => {
         products: products
       });
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.postCart = (req, res, next) => {
@@ -67,6 +83,11 @@ exports.postCart = (req, res, next) => {
     .then(result => {
       console.log(result);
       res.redirect('/cart');
+    })
+    .catch(err => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -77,7 +98,11 @@ exports.postCartDeleteProduct = (req, res, next) => {
     .then(result => {
       res.redirect('/cart');
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.postOrder = (req, res, next) => {
@@ -103,7 +128,11 @@ exports.postOrder = (req, res, next) => {
     .then(() => {
       res.redirect('/orders');
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.getOrders = (req, res, next) => {
@@ -115,5 +144,70 @@ exports.getOrders = (req, res, next) => {
         orders: orders
       });
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
+};
+
+
+exports.getInvoice = (req, res, next) => {
+  const orderId = req.params.orderId;
+  Order.findById(orderId)
+  .then( order => {
+    if(!order){
+      next(new Error('No order found'));
+    }else{
+      if(order.user.userId.toString() !== req.user._id.toString()){
+        next(new Error('Unauthorized'));
+      }else{
+        const invoiceName = 'invoice-' + orderId + '.pdf'; 
+        const invoicePath = path.join('data', 'invoices', invoiceName);
+
+        const pdfDoc = new PDFDocument();
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"');
+        pdfDoc.pipe(fs.createWriteStream(invoicePath));
+        pdfDoc.pipe(res);
+
+        pdfDoc.fontSize(26).text('Invoice', {
+          underline: true
+        });
+
+        pdfDoc.text('______________________________');
+        let totalPrice = 0;
+        order.products.forEach( product => {
+          totalPrice += product.quantity * product.product.price;
+          pdfDoc.text(
+              product.product.title + 
+              ' - ' + 
+              product.quantity + 
+              ' x ' + 
+              '$' + 
+              product.product.price
+            );
+        });
+
+        pdfDoc.text('Total Price: $' + totalPrice);
+
+        pdfDoc.end();
+
+        // fs.readFile(invoicePath, (err, data) => {
+        //   if(err){
+        //     return next(err);
+        //   }else{
+        //     res.setHeader('Content-Type', 'application/pdf');
+        //     res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"');
+        //     res.send(data);
+        //   }
+        // });
+      
+        //const file = fs.createReadStream(invoicePath);
+        
+        // file.pipe(res);
+      }
+    }
+  })
+  .catch( error => next(error));
 };
