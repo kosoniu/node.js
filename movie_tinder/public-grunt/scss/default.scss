@@ -1,0 +1,24 @@
+body{
+    // background: red;
+}
+
+.icon {
+    display: inline-block;
+    padding: 10px;
+
+    &:before {
+        font-family: 'fontello';
+    }
+
+    &.accept {
+        &:before {
+            content: '\E801';
+        }
+    }
+
+    &.reject {
+        &:before {
+            content: '\E800';
+        }
+    }
+}

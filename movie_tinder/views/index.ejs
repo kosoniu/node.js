@@ -1,0 +1,31 @@
+<%- include('./includes/header.ejs') %>
+
+<div class="container">
+    <div class="row">
+        <% if(movieId) { %>
+            <div class="main_box_wrapper">
+                <div class="main_box_wrapper_inner">
+                    <div class="movie_info">
+                        <h1 class="movie_title"><%= movie.title %></h1>
+                        <p class="rating">(<%= movie.rating %> / 10)</p>
+                    </div>
+                    
+                    <div class="photo_wrapper">
+                        <img src="<%= movie.imageUrl %>" alt="<%= movie.title %>" />
+                    </div>
+                    <p class="movie_summary"><%= movie.summary %></p>
+                </div>
+                <div class="controls_wrapper">
+                    <input id="movieId" type="hidden" name="movieId" value="<%= movieId %>">
+                    <input id="userId" type="hidden" name="userId" value="<%= userId %>">
+                    <button id="acceptButton"><span class="icon accept"></span></button>
+                    <button id="rejectButton"><span class="icon reject"></span></button>
+                </div>
+            </div>
+        <% } else { %>
+            <h1>Brak filmów! :(</h1>
+        <% } %>
+    </div>
+</div>
+
+<%- include('./includes/footer.ejs') %>
