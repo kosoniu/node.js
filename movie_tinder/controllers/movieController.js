@@ -15,6 +15,8 @@ exports.getIndex = (req, res, next) => {
             user.resetClickedMovies()
             .then()
             .catch();
+            //czyszczę tutaj bazę danych, żeby móc po przełądowaniu strony raz jeszcze testować
+            //defaultowo nie powinno tego być
         });
     })
     .catch( error => console.log(error));
@@ -162,7 +164,7 @@ exports.postAddMovie = (req, res, next) => {
     
     movie.save()
     .then( result => {
-        res.redirect('/');
+        res.redirect('/movies');
     })
     .catch( error => console.log(error));
 
