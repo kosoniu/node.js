@@ -8,14 +8,10 @@ exports.getIndex = (req, res, next) => {
     const user = new User(req.user);
     const movieArray = user.clickedMovies;
 
-    console.log(user.clickedMovies);
-
     User
     .find()
     .then( users => {
         users.forEach(user => {
-            // console.log(user);
-
             user.resetClickedMovies()
             .then()
             .catch();
@@ -61,11 +57,8 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.postAcceptedMovie = (req, res, next) => {
-    const user = new User(req.user);
     const userId = req.body.userId;
     const movieId = req.body.movieId;
-
-    console.log(user.clickedMovies);
 
     Movie
     .findById(movieId)
@@ -89,16 +82,12 @@ exports.postAcceptedMovie = (req, res, next) => {
         .cursor()
         .next()
         .then(movie => {
-            // movie = movies[movieIndex];
-    
             if(!movie){
                 console.log('END OF LIST!');
                 res.status(200).json({
                     "endOfList": true
                 });
             }else{
-                // console.log('\n\n\n');
-                // console.log(movie);
                 res.status(200).json(movie);
             }
         })
@@ -108,11 +97,8 @@ exports.postAcceptedMovie = (req, res, next) => {
 };
 
 exports.postRejectMovie = (req, res, next) => {
-    const user = new User(req.user);
     const userId = req.body.userId;
     const movieId = req.body.movieId;
-
-    console.log(user.clickedMovies);
 
     Movie
     .findById(movieId)
@@ -136,16 +122,12 @@ exports.postRejectMovie = (req, res, next) => {
         .cursor()
         .next()
         .then(movie => {
-            // movie = movies[movieIndex];
-    
             if(!movie){
                 console.log('END OF LIST!');
                 res.status(200).json({
                     "endOfList": true
                 });
             }else{
-                // console.log('\n\n\n');
-                // console.log(movie);
                 res.status(200).json(movie);
             }
         })
@@ -153,6 +135,46 @@ exports.postRejectMovie = (req, res, next) => {
     })
     .catch(error => console.log(error));
 };
+
+exports.getAddMovie = (req, res, next) => {
+    res.render('add-movie', {
+        path: '/add-movie',
+        pageTitle: 'Add movie'
+    });
+};
+
+exports.postAddMovie = (req, res, next) => {
+    const title = req.body.title;
+    const summary = req.body.summary;
+    const imageUrl = req.body.imageUrl;
+    const rating = req.body.rating;
+
+    const movie = new Movie({
+        title: title,
+        summary: summary,
+        imageUrl: imageUrl,
+        rating: rating,
+        decision: {
+            accepted: [],
+            rejected: []
+        }
+    });
+    
+    movie.save()
+    .then( result => {
+        res.redirect('/');
+    })
+    .catch( error => console.log(error));
+
+};
+
+exports.getRecommendations = (req, res, next) => {
+    Movie.find()
+        .then(movie => {
+            res.status(200).json(movie);
+    })
+    .catch(error => console.log(error));
+}
 
 
 

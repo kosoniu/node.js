@@ -1,3 +1,5 @@
 
 .icon-cancel:before { content: '\e800'; } /* '' */
 .icon-check:before { content: '\e801'; } /* '' */
+.icon-folder-add:before { content: '\e802'; } /* '' */
+.icon-logout:before { content: '\f02d'; } /* '' */

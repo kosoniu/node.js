@@ -1,0 +1,40 @@
+.navigation{
+    nav{
+        display: flex;
+        justify-content: space-between;
+        padding: 16px 64px;
+        font-size: 18px;
+
+
+        button{
+            padding: 8px;
+            background: #CFE8BD;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            font-size: 18px;
+            transition: .2s ease all;
+
+            &:hover,
+            &.active {
+                background-color: #1A5E09;
+                color: white;
+            }
+
+        }
+
+        a{
+            padding: 8px;
+            background: #CFE8BD;
+            color: black;
+            text-decoration: none;
+            transition: .2s ease all;
+
+            &:hover,
+            &.active {
+                background-color: #1A5E09;
+                color: white;
+            }
+        }
+    }
+}

@@ -1,5 +1,24 @@
+@import '_reset.scss';
+@import '_index.scss';
+@import '_navigation.scss';
+@import '_forms.scss';
+
 body{
-    // background: red;
+    background: #FFFFC7;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.container{
+    max-width: 1440px;
+    margin: 0 auto;
+
+    .row{
+        max-width: 1410px;
+        margin: 0 auto;
+        height: calc(100vh - 64px);
+        display: flex;
+        align-items: center;
+    }
 }
 
 .icon {
@@ -19,6 +38,18 @@ body{
     &.reject {
         &:before {
             content: '\E800';
+        }
+    }
+
+    &.logout {
+        &:before {
+            content: '\F02D';
+        }
+    }
+
+    &.add {
+        &:before {
+            content: '\E802';
         }
     }
 }
