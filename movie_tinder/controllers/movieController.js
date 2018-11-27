@@ -8,6 +8,21 @@ exports.getIndex = (req, res, next) => {
     const user = new User(req.user);
     const movieArray = user.clickedMovies;
 
+    console.log(user.clickedMovies);
+
+    User
+    .find()
+    .then( users => {
+        users.forEach(user => {
+            // console.log(user);
+
+            user.resetClickedMovies()
+            .then()
+            .catch();
+        });
+    })
+    .catch( error => console.log(error));
+
     Movie.find({
         _id: {
             $nin: movieArray
@@ -23,9 +38,14 @@ exports.getIndex = (req, res, next) => {
             }
         })
         .then( movies => {
-            movie = movies[movieIndex];
 
-            // console.log(movieArray);
+            movies.forEach(movie => {
+                movie.resetDecisions()
+                .then()
+                .catch();
+            });
+
+            movie = movies[movieIndex];
 
             return res.render('index', {
                 movie: movie,
@@ -40,47 +60,12 @@ exports.getIndex = (req, res, next) => {
     .catch(error => console.log( error ));
 };
 
-exports.getMovie = (req, res, next) => {
-    const user = new User(req.user);
-    const movieArray = user.clickedMovies;
-
-    Movie
-    .find({
-        _id: {
-            $nin: movieArray
-        }
-    })
-    .countDocuments()
-    .then(counter => {
-        let movieIndex = Math.floor(Math.random() * counter);
-
-        Movie.find({
-                _id: {
-                    $nin: movieArray
-                }
-            })
-            .then(movies => {
-                movie = movies[movieIndex];
-
-                console.log(movieArray);
-
-                res.status(200).json(movie);
-            })
-            .catch(error => console.log(error));
-    })
-    .catch(error => console.log(error));
-};
-
 exports.postAcceptedMovie = (req, res, next) => {
-    const movieId = req.body.movieId;
+    const user = new User(req.user);
     const userId = req.body.userId;
+    const movieId = req.body.movieId;
 
-    User
-    .findById(userId)
-    .then( user => {
-        user.addToClicked(movieId);
-    })
-    .catch(error => console.log(error));
+    console.log(user.clickedMovies);
 
     Movie
     .findById(movieId)
@@ -89,26 +74,84 @@ exports.postAcceptedMovie = (req, res, next) => {
     })
     .then()
     .catch(error => console.log(error));
+
+    User
+    .findById(userId)
+    .then( user => {
+        return user.addToClicked(movieId);
+    })
+    .then( result => {
+        Movie.find({
+            _id: {
+                $nin: result.clickedMovies
+            }
+        })
+        .cursor()
+        .next()
+        .then(movie => {
+            // movie = movies[movieIndex];
+    
+            if(!movie){
+                console.log('END OF LIST!');
+                res.status(200).json({
+                    "endOfList": true
+                });
+            }else{
+                // console.log('\n\n\n');
+                // console.log(movie);
+                res.status(200).json(movie);
+            }
+        })
+        .catch(error => console.log(error));
+    })
+    .catch(error => console.log(error));
 };
 
 exports.postRejectMovie = (req, res, next) => {
-    const movieId = req.body.movieId;
+    const user = new User(req.user);
     const userId = req.body.userId;
+    const movieId = req.body.movieId;
 
-    User
-        .findById(userId)
-        .then(user => {
-            user.addToClicked(movieId);
-        })
-        .catch(error => console.log(error));
+    console.log(user.clickedMovies);
 
     Movie
-        .findById(movieId)
-        .then(movie => {
-            return movie.addToRejected(userId);
+    .findById(movieId)
+    .then(movie => {
+        return movie.addToRejected(userId);
+    })
+    .then()
+    .catch(error => console.log(error));
+
+    User
+    .findById(userId)
+    .then( user => {
+        return user.addToClicked(movieId);
+    })
+    .then( result => {
+        Movie.find({
+            _id: {
+                $nin: result.clickedMovies
+            }
         })
-        .then()
+        .cursor()
+        .next()
+        .then(movie => {
+            // movie = movies[movieIndex];
+    
+            if(!movie){
+                console.log('END OF LIST!');
+                res.status(200).json({
+                    "endOfList": true
+                });
+            }else{
+                // console.log('\n\n\n');
+                // console.log(movie);
+                res.status(200).json(movie);
+            }
+        })
         .catch(error => console.log(error));
+    })
+    .catch(error => console.log(error));
 };
 
 

@@ -30,4 +30,12 @@ userSchema.methods.addToClicked = function (movieId) {
     return this.save();
 }
 
+userSchema.methods.resetClickedMovies = function () {
+    if(this.clickedMovies.length > 0){
+        this.clickedMovies = [];
+    }
+
+    return this.save();
+}
+
 module.exports = mongoose.model('User', userSchema);

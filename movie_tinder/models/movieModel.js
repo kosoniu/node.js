@@ -58,4 +58,16 @@ movieSchema.methods.addToRejected = function (userId) {
     return this.save();
 }
 
+movieSchema.methods.resetDecisions = function () {
+    if(this.decision.accepted.length > 0 ){
+        this.decision.accepted = [];
+    }
+
+    if(this.decision.rejected.length > 0 ){
+        this.decision.rejected = [];
+    }
+
+    return this.save();
+}
+
 module.exports = mongoose.model('Movie', movieSchema);

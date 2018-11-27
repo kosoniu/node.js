@@ -5,7 +5,7 @@ const movieController = require('../controllers/movieController');
 
 router.get('/', movieController.getIndex);
 
-router.get('/get-movie', movieController.getMovie);
+// router.post('/get-movie', movieController.getMovie);
 
 router.post('/accepted', movieController.postAcceptedMovie);
 
