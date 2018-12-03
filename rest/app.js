@@ -4,9 +4,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const multer = require('multer');
+// const socketIO = require('socket.io');
+
 
 const feedRoutes = require('./routes/feed');
 const authRoutes = require('./routes/auth');
+
 
 
 const app = express();
@@ -66,6 +69,12 @@ mongoose
     'mongodb+srv://kosoniu:admin@testcluster-dfhlg.gcp.mongodb.net/messages?retryWrites=true'
   )
   .then(result => {
-    app.listen(8080);
+    const server = app.listen(8080);
+    const io = require('./socket').init(server);
+
+    io.on('connection', socket => {
+      console.log('Client connected');
+    });
+
   })
   .catch(err => console.log(err));
